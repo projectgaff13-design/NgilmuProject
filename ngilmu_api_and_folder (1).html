@@ -1,0 +1,175 @@
+
+<div style="padding:4px 0">
+<div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+  <button onclick="showTab('api')" id="tab-api" style="padding:7px 16px;border-radius:8px;font-size:13px;cursor:pointer;background:var(--color-background-info);color:var(--color-text-info);border:1.5px solid var(--color-border-info);font-weight:500">API Endpoints</button>
+  <button onclick="showTab('folder')" id="tab-folder" style="padding:7px 16px;border-radius:8px;font-size:13px;cursor:pointer;background:transparent;color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary)">Struktur Folder</button>
+  <button onclick="showTab('tech')" id="tab-tech" style="padding:7px 16px;border-radius:8px;font-size:13px;cursor:pointer;background:transparent;color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary)">Tech Stack</button>
+</div>
+
+<div id="content-api">
+<div style="display:flex;flex-direction:column;gap:6px">
+${[
+  {method:'POST',path:'/api/auth/register',desc:'Daftar akun baru (user/ustadz/admin)',color:'success'},
+  {method:'POST',path:'/api/auth/login',desc:'Login dan dapatkan JWT token',color:'success'},
+  {method:'GET',path:'/api/ustadz',desc:'List ustadz terverifikasi (filter: bidang, rating)',color:'info'},
+  {method:'GET',path:'/api/ustadz/:id',desc:'Profil lengkap ustadz + spesialisasi + review',color:'info'},
+  {method:'POST',path:'/api/consultations',desc:'Buat sesi konsultasi baru + AI klasifikasi topik',color:'success'},
+  {method:'GET',path:'/api/consultations/:id/messages',desc:'Ambil riwayat chat satu sesi konsultasi',color:'info'},
+  {method:'POST',path:'/api/consultations/:id/messages',desc:'Kirim pesan dalam sesi konsultasi',color:'success'},
+  {method:'GET',path:'/api/courses',desc:'List kelas tersedia (filter: kategori, harga, level)',color:'info'},
+  {method:'POST',path:'/api/courses',desc:'Buat kelas baru (ustadz only)',color:'success'},
+  {method:'POST',path:'/api/courses/:id/enroll',desc:'Daftar ke kelas (proses payment jika berbayar)',color:'success'},
+  {method:'GET',path:'/api/courses/:id/materials',desc:'Akses materi kelas (hanya enrolled)',color:'info'},
+  {method:'POST',path:'/api/payments/checkout',desc:'Buat order pembayaran (Midtrans/Xendit)',color:'warning'},
+  {method:'POST',path:'/api/payments/webhook',desc:'Webhook konfirmasi pembayaran dari gateway',color:'warning'},
+  {method:'GET',path:'/api/archive',desc:'Cari arsip Q&A publik (full-text search)',color:'info'},
+  {method:'POST',path:'/api/reviews',desc:'Beri rating & review ustadz atau kelas',color:'success'},
+  {method:'GET',path:'/api/ai/classify',desc:'Klasifikasi topik pertanyaan via NLP',color:'purple'},
+  {method:'GET',path:'/api/ai/recommend',desc:'Rekomendasikan ustadz berdasarkan pertanyaan',color:'purple'},
+  {method:'PATCH',path:'/api/admin/ustadz/:id/verify',desc:'Verifikasi ustadz oleh admin/pesantren',color:'danger'},
+  {method:'DELETE',path:'/api/admin/content/:id',desc:'Hapus konten bermasalah (admin only)',color:'danger'},
+].map(e=>{
+  const colors = {success:'var(--color-text-success)',info:'var(--color-text-info)',warning:'var(--color-text-warning)',danger:'var(--color-text-danger)',purple:'#7F77DD'};
+  const bgs = {success:'var(--color-background-success)',info:'var(--color-background-info)',warning:'var(--color-background-warning)',danger:'var(--color-background-danger)',purple:'#EEEDFE'};
+  return `<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:8px">
+    <span style="font-size:11px;font-weight:500;padding:3px 8px;border-radius:5px;background:${bgs[e.color]};color:${colors[e.color]};min-width:46px;text-align:center">${e.method}</span>
+    <code style="font-size:12px;font-family:var(--font-mono);color:var(--color-text-primary);flex:0 0 auto">${e.path}</code>
+    <span style="font-size:12px;color:var(--color-text-secondary);flex:1">${e.desc}</span>
+  </div>`;
+}).join('')}
+</div>
+</div>
+
+<div id="content-folder" style="display:none">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+<div>
+<div style="font-size:13px;font-weight:500;margin-bottom:8px;color:var(--color-text-info)">Frontend (Next.js)</div>
+<pre style="font-size:11px;line-height:1.7;background:var(--color-background-secondary);padding:12px;border-radius:10px;color:var(--color-text-primary);overflow:auto">ngilmu-frontend/
+├── app/
+│   ├── (auth)/
+│   │   ├── login/
+│   │   └── register/
+│   ├── dashboard/
+│   │   ├── page.tsx
+│   │   └── layout.tsx
+│   ├── konsultasi/
+│   │   ├── page.tsx
+│   │   └── [id]/
+│   ├── kelas/
+│   │   ├── page.tsx
+│   │   └── [id]/
+│   ├── arsip/
+│   ├── chat/
+│   └── profil/
+├── components/
+│   ├── ui/
+│   │   ├── Button.tsx
+│   │   ├── Card.tsx
+│   │   ├── Badge.tsx
+│   │   └── Avatar.tsx
+│   ├── chat/
+│   │   ├── ChatWindow.tsx
+│   │   └── MessageBubble.tsx
+│   ├── ustadz/
+│   │   ├── UstadzCard.tsx
+│   │   └── UstadzProfile.tsx
+│   └── course/
+│       ├── CourseCard.tsx
+│       └── MaterialPlayer.tsx
+├── lib/
+│   ├── api.ts
+│   ├── socket.ts
+│   └── auth.ts
+├── hooks/
+│   ├── useChat.ts
+│   └── useConsultation.ts
+├── store/
+│   └── zustand/
+└── public/</pre>
+</div>
+<div>
+<div style="font-size:13px;font-weight:500;margin-bottom:8px;color:var(--color-text-success)">Backend (Node.js)</div>
+<pre style="font-size:11px;line-height:1.7;background:var(--color-background-secondary);padding:12px;border-radius:10px;color:var(--color-text-primary);overflow:auto">ngilmu-backend/
+├── src/
+│   ├── config/
+│   │   ├── db.js
+│   │   ├── redis.js
+│   │   └── env.js
+│   ├── models/
+│   │   ├── User.js
+│   │   ├── Ustadz.js
+│   │   ├── Consultation.js
+│   │   ├── Message.js
+│   │   ├── Course.js
+│   │   ├── Material.js
+│   │   ├── Transaction.js
+│   │   └── Review.js
+│   ├── routes/
+│   │   ├── auth.routes.js
+│   │   ├── ustadz.routes.js
+│   │   ├── consultation.routes.js
+│   │   ├── course.routes.js
+│   │   ├── payment.routes.js
+│   │   ├── archive.routes.js
+│   │   └── admin.routes.js
+│   ├── controllers/
+│   │   └── [per-route]
+│   ├── middleware/
+│   │   ├── auth.js
+│   │   ├── role.js
+│   │   └── rateLimiter.js
+│   ├── services/
+│   │   ├── ai.service.js
+│   │   ├── payment.service.js
+│   │   ├── notification.service.js
+│   │   └── search.service.js
+│   ├── socket/
+│   │   └── chat.socket.js
+│   └── utils/
+├── tests/
+└── server.js</pre>
+</div>
+</div>
+</div>
+
+<div id="content-tech" style="display:none">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+${[
+  {layer:'Frontend',items:[['Next.js 14 (App Router)','Framework React utama'],['Tailwind CSS','Styling utility-first'],['Socket.io Client','Real-time chat'],['Zustand','State management'],['React Query','Data fetching & cache'],['shadcn/ui','Komponen UI']]},
+  {layer:'Backend',items:[['Node.js + Express','Server framework'],['Socket.io','Real-time bidirectional'],['Mongoose (ODM)','MongoDB ORM'],['BullMQ + Redis','Job queue & cache'],['Multer + S3','Upload media'],['JWT + bcrypt','Auth & enkripsi']]},
+  {layer:'Database',items:[['MongoDB Atlas','Data utama (user, Q&A)'],['Redis','Cache & session'],['Elasticsearch','Full-text search arsip'],['AWS S3 / R2','Penyimpanan media']]},
+  {layer:'AI & Eksternal',items:[['OpenAI API','Klasifikasi & summarize'],['Midtrans','Payment gateway (ID)'],['Xendit','Payment alternatif'],['Firebase FCM','Push notification'],['SendGrid','Email transaksional'],['WhatsApp Cloud API','Notifikasi WA']]},
+].map(cat=>`
+  <div style="background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:10px;padding:12px">
+    <div style="font-size:13px;font-weight:500;margin-bottom:8px;color:var(--color-text-info)">${cat.layer}</div>
+    ${cat.items.map(([name,desc])=>`
+      <div style="display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-bottom:0.5px solid var(--color-border-tertiary)">
+        <code style="font-size:12px;font-family:var(--font-mono);color:var(--color-text-primary)">${name}</code>
+        <span style="font-size:11px;color:var(--color-text-secondary);text-align:right;flex:1;margin-left:8px">${desc}</span>
+      </div>
+    `).join('')}
+  </div>
+`).join('')}
+</div>
+</div>
+
+<script>
+function showTab(tab) {
+  ['api','folder','tech'].forEach(t => {
+    document.getElementById('content-'+t).style.display = t === tab ? 'block' : 'none';
+    const btn = document.getElementById('tab-'+t);
+    if (t === tab) {
+      btn.style.background = 'var(--color-background-info)';
+      btn.style.color = 'var(--color-text-info)';
+      btn.style.border = '1.5px solid var(--color-border-info)';
+      btn.style.fontWeight = '500';
+    } else {
+      btn.style.background = 'transparent';
+      btn.style.color = 'var(--color-text-secondary)';
+      btn.style.border = '0.5px solid var(--color-border-tertiary)';
+      btn.style.fontWeight = '400';
+    }
+  });
+}
+</script>
+</div>
